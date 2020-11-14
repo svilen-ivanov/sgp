@@ -1,79 +1,134 @@
-import math
-import time
-import threading
-from pprint import pprint
+import logging
+import sys
+from logging.config import dictConfig
 
-def min_coins_list(min_coins, amount):
-    coin_list = []
-    while amount >= 0 and min_coins[amount] is not None:
-        min_coin = min_coins[amount]
-        coin_list.append(min_coin)
-        amount -= min_coin
-    return coin_list
+from ep2.coin_change import min_coin_change
+
+dictConfig(dict(
+    version=1,
+    formatters={'f': {'format': '%(asctime)s [%(threadName)s] %(name)-12s %(levelname)-8s %(message)s'}},
+    handlers={'h': {'class': 'logging.StreamHandler', 'formatter': 'f', 'level': logging.DEBUG, 'stream': sys.stdout}},
+    root={'handlers': ['h'], 'level': logging.DEBUG},
+))
 
 
-def min_coin_change(coins, amount):
-    num_min_coins = [math.inf] * (amount + 1)
-    min_coins = [None] * (amount + 1)
+class Frame:
+    def __init__(self, rel_line, abs_line, local_vars, file_name):
+        self.rel_line = rel_line
+        self.file_name = file_name
+        self.abs_line = abs_line
+        self.local_vars = local_vars.copy()
+        self.frame_no = None
 
-    num_min_coins[0] = 0
-    min_coins[0] = None
+    def __str__(self):
+        line = f"Frame {self.frame_no}, line {self.rel_line} ({self.file_name}:{self.abs_line})\n"
+        for var_name, var_value in self.local_vars.items():
+            line += f"    {var_name} = {var_value}\n"
+        return line
 
-    for sub_amount in range(1, amount + 1):  # for sub amounts from 1 to amount _inclusive_
-        sub_num_min_coins = math.inf
-        sub_min_coin = None
-        for coin in coins:
-            prev_amount = sub_amount - coin
-            if prev_amount >= 0:
-                candidate_min_coin = num_min_coins[prev_amount] + 1
-                if candidate_min_coin < sub_num_min_coins:
-                    sub_num_min_coins = candidate_min_coin
-                    sub_min_coin = coin
 
-        num_min_coins[sub_amount] = sub_num_min_coins
-        min_coins[sub_amount] = sub_min_coin
+class CollectedTrace():
+    def __init__(self):
+        self.frames = []
+        self.current_frame = 0
 
-    return min_coins_list(min_coins, amount), num_min_coins[amount]
+    def append(self, frame):
+        frame.frame_no = len(self.frames)
+        self.frames.append(frame)
+
+    def step(self, num_step=1):
+        last_frame = len(self.frames) - 1
+        if self.current_frame == last_frame:
+            return None
+        if self.current_frame + num_step < last_frame:
+            self.current_frame += num_step
+        else:
+            self.current_frame = last_frame
+        return self.current()
+
+    def current(self):
+        return self.frames[self.current_frame]
+
+    def at_the_end(self):
+        return self.current_frame == len(self.frames) - 1
+
+    def step_to_rel_line(self, rel_line):
+        while not self.at_the_end():
+            current = self.current()
+            if rel_line == current.rel_line:
+                return current
+            self.step()
+        return None
+
+    def step_to_abs_line(self, abs_line):
+        while not self.at_the_end():
+            current = self.current()
+            if abs_line == current.abs_line:
+                return current
+            self.step()
+        return None
+
+
+class ScriptedInspector():
+    DIVIDER = "-" * 78
+
+    def __init__(self, func_to_inspect, args):
+        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.setLevel(logging.INFO)
+        self.break_at_line = None
+        self.func_to_inspect = func_to_inspect
+        self.args = args
+        self.enabled = True
+        self.collected_trace = None
+
+    def collect_trace(self):
+        self.collected_trace = CollectedTrace()
+        sys.settrace(self.trace_calls)
+        self.func_to_inspect(*self.args)
+        sys.settrace(None)
+        return self.collected_trace
+
+    def trace_calls(self, frame, event, arg):
+        if event != 'call':
+            return
+        co = frame.f_code
+        func_name = co.co_name
+        if func_name == self.func_to_inspect.__name__:
+            self.trace_start()
+            return self.trace_func
+        return
+
+    def trace_func(self, frame, event, arg):
+        rel_line = frame.f_lineno - frame.f_code.co_firstlineno
+        frame = Frame(rel_line, frame.f_lineno, frame.f_locals, frame.f_code.co_filename)
+        self.trace_step(frame)
+        if event == 'return':
+            self.trace_end(frame)
+        return
+
+    def trace_start(self):
+        self.logger.debug("-- TRACE START --")
+
+    def trace_end(self, frame):
+        self.logger.debug("-- TRACE END --")
+        self.collected_trace.append(frame)
+        self.logger.debug(f"{frame}")
+        self.logger.debug(self.DIVIDER)
+
+    def trace_step(self, frame):
+        self.logger.debug(f"{frame}")
+        self.collected_trace.append(frame)
+        self.logger.debug(self.DIVIDER)
 
 
 if __name__ == '__main__':
     coins = [1, 2, 5]
     amount = 13
-    header = "AAAAAA"
-    e = threading.Event()
 
-    def trace_calls(frame, event, arg):
-        if event != 'call':
-            return
-        co = frame.f_code
-        func_name = co.co_name
-        if func_name == 'min_coin_change':
-            return trace_func
-        return
-
-    def trace_func(frame, event, arg):
-        print("-" * 78)
-        print(header)
-        rel_line = frame.f_lineno - frame.f_code.co_firstlineno
-        print(f"Line {rel_line}")
-
-        for var_name, var_value in frame.f_locals.items():
-            print(f"{var_name} = {var_value}")
-        print("-" * 78)
-        e.wait()
-        e.clear()
-        return
-
-    threading.settrace(trace_calls)
-    thread = threading.Thread(target=min_coin_change, args=(coins, amount))
-    thread.start()
-
-    time.sleep(1)
-    e.set()
-    time.sleep(1)
-    e.set()
-    time.sleep(1)
-    e.set()
-
-
+    inspector = ScriptedInspector(func_to_inspect=min_coin_change, args=(coins, amount))
+    trace = inspector.collect_trace()
+    print(trace.step())
+    print(trace.step())
+    print(trace.step())
+    print(trace.step_to_abs_line(34))
 
