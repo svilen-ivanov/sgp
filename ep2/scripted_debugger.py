@@ -129,8 +129,11 @@ if __name__ == '__main__':
 
     inspector = ScriptedInspector(func_to_inspect=min_coin_change, args=(coins, amount))
     trace = inspector.collect_trace()
-    loop_begin = 20
+    amount_loop_begin = 20
+    coin_loop_begin = 24
     while not trace.at_the_end():
-        frame = trace.step_to_abs_line(20)
+        frame = trace.step_to_abs_line(amount_loop_begin)
+        print(frame)
+        frame = trace.step_to_abs_line(coin_loop_begin)
         print(frame)
 
