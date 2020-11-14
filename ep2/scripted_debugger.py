@@ -1,6 +1,7 @@
 import logging
 import sys
 from logging.config import dictConfig
+import copy
 
 from ep2.coin_change import min_coin_change
 
@@ -17,7 +18,7 @@ class Frame:
         self.rel_line = rel_line
         self.file_name = file_name
         self.abs_line = abs_line
-        self.local_vars = local_vars.copy()
+        self.local_vars = copy.deepcopy(local_vars)
         self.frame_no = None
 
     def __str__(self):
@@ -53,20 +54,21 @@ class CollectedTrace():
         return self.current_frame == len(self.frames) - 1
 
     def step_to_rel_line(self, rel_line):
-        while not self.at_the_end():
-            current = self.current()
+        while True:
+            current = self.step()
+            if current is None:
+                return None
             if rel_line == current.rel_line:
                 return current
-            self.step()
-        return None
 
     def step_to_abs_line(self, abs_line):
-        while not self.at_the_end():
-            current = self.current()
+        while True:
+            current = self.step()
+            if current is None:
+                return None
             if abs_line == current.abs_line:
                 return current
-            self.step()
-        return None
+
 
 
 class ScriptedInspector():
@@ -127,8 +129,8 @@ if __name__ == '__main__':
 
     inspector = ScriptedInspector(func_to_inspect=min_coin_change, args=(coins, amount))
     trace = inspector.collect_trace()
-    print(trace.step())
-    print(trace.step())
-    print(trace.step())
-    print(trace.step_to_abs_line(34))
+    loop_begin = 20
+    while not trace.at_the_end():
+        frame = trace.step_to_abs_line(20)
+        print(frame)
 
