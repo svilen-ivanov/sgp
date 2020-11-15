@@ -32,7 +32,7 @@ class Description(Scene):
         self.add(all_coins)
         all_coins.next_to(amount_cents, DOWN, buff=LARGE_BUFF)
 
-        amount_cents_small = CyrTex(r'\foreignlanguage{bulgarian}{142 ст.}').scale(2)
+        amount_cents_small = CyrTex(r'\foreignlanguage{bulgarian}{142 ст.} =').scale(2)
         amount_cents_small.shift(amount_cents_small.get_width() * LEFT + UP)
         self.play(
             amount_cents.shift, amount_cents_small.get_width() * LEFT + UP,
@@ -40,7 +40,7 @@ class Description(Scene):
             all_coins.to_edge, DOWN
         )
 
-        brace = MathTex(r'\underbrace{\qquad\qquad}').scale(2).rotate(-PI / 2)
+        brace = MathTex(r'\underbrace{\qquad\qquad\qquad\qquad}').scale(1).rotate(-PI / 2)
         brace.next_to(amount_cents_small, RIGHT)
         self.play(FadeIn(brace))
 
@@ -50,7 +50,7 @@ class Description(Scene):
 
         buff = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER
         cents50_1 = cents50.copy()
-        edge = brace.get_critical_point(RIGHT) + RIGHT / 2
+        edge = brace.get_critical_point(RIGHT) + RIGHT * 0.75
         up = (cents50_1.get_height() + buff) * UP
         down = (cents50_1.get_height() + buff) * DOWN
 
