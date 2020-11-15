@@ -5,12 +5,12 @@ import copy
 
 from ep2.coin_change import min_coin_change
 
-dictConfig(dict(
-    version=1,
-    formatters={'f': {'format': '%(asctime)s [%(threadName)s] %(name)-12s %(levelname)-8s %(message)s'}},
-    handlers={'h': {'class': 'logging.StreamHandler', 'formatter': 'f', 'level': logging.DEBUG, 'stream': sys.stdout}},
-    root={'handlers': ['h'], 'level': logging.DEBUG},
-))
+# dictConfig(dict(
+#     version=1,
+#     formatters={'f': {'format': '%(asctime)s [%(threadName)s] %(name)-12s %(levelname)-8s %(message)s'}},
+#     handlers={'h': {'class': 'logging.StreamHandler', 'formatter': 'f', 'level': logging.DEBUG, 'stream': sys.stdout}},
+#     root={'handlers': ['h'], 'level': logging.DEBUG},
+# ))
 
 
 class Frame:
