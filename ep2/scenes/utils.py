@@ -8,6 +8,7 @@ cyr_tex = TexTemplate(preamble=r"""
 
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{pbox}
 \usepackage{dsfont}
 \usepackage{setspace}
 \usepackage{tipa}
