@@ -21,6 +21,7 @@ cyr_tex = TexTemplate(preamble=r"""
 \usepackage{physics}
 \usepackage{xcolor}
 \usepackage{microtype}
+\usepackage{underscore}
 \DisableLigatures{encoding = *, family = * }
 \linespread{1}
 """)
