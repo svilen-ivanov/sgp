@@ -13,9 +13,7 @@ def min_coin_list(min_coins, amount):
 def min_coin_change(coins, amount):
     num_min_coins = [math.inf] * (amount + 1)
     min_coin = [None] * (amount + 1)
-
     num_min_coins[0] = 0
-    min_coin[0] = None
 
     for sub_amount in range(1, amount + 1): # for sub amounts from 1 to amount _inclusive_
         sub_num_min_coins = math.inf

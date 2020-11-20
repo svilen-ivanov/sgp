@@ -5,6 +5,7 @@ import copy
 
 from ep2.coin_change import min_coin_change
 
+
 # dictConfig(dict(
 #     version=1,
 #     formatters={'f': {'format': '%(asctime)s [%(threadName)s] %(name)-12s %(levelname)-8s %(message)s'}},
@@ -70,7 +71,6 @@ class CollectedTrace():
                 return current
 
 
-
 class ScriptedInspector():
     DIVIDER = "-" * 78
 
@@ -96,7 +96,9 @@ class ScriptedInspector():
         co = frame.f_code
         func_name = co.co_name
         if func_name == self.func_to_inspect.__name__:
-            self.trace_start()
+            rel_line = frame.f_lineno - frame.f_code.co_firstlineno
+            frame = Frame(rel_line, frame.f_lineno, frame.f_locals, frame.f_code.co_filename)
+            self.trace_start(frame)
             return self.trace_func
         return
 
@@ -108,8 +110,11 @@ class ScriptedInspector():
             self.trace_end(frame)
         return
 
-    def trace_start(self):
+    def trace_start(self, frame):
         self.logger.debug("-- TRACE START --")
+        self.logger.debug(f"{frame}")
+        self.collected_trace.append(frame)
+        self.logger.debug(self.DIVIDER)
 
     def trace_end(self, frame):
         self.logger.debug("-- TRACE END --")
@@ -136,4 +141,3 @@ if __name__ == '__main__':
         print(frame)
         frame = trace.step_to_abs_line(coin_loop_begin)
         print(frame)
-
