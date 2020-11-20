@@ -264,7 +264,7 @@ class MinChangeStepByStep(Scene):
             self.d_amount = self.add_var_update(animations, self.d_amount, local_vars, 'amount',
                                                 [6, -3.5 + 3 * MED_LARGE_BUFF, 0.])
             self.d_sub_min_coin = self.add_var_update(animations, self.d_sub_min_coin, local_vars, 'sub_min_coin',
-                                                      [6,  -3.5 + 2 * MED_LARGE_BUFF, 0.])
+                                                      [6,  -3.5 + 2 * MED_LARGE_BUFF, 0.], use_coin=True)
             self.d_sub_num_min_coins = self.add_var_update(animations, self.d_sub_num_min_coins, local_vars,
                                                            'sub_num_min_coins', [6, -3.5 + 1 * MED_LARGE_BUFF, 0.])
             self.d_candidate_num_min_coins = self.add_var_update(animations, self.d_candidate_num_min_coins, local_vars,
@@ -275,13 +275,22 @@ class MinChangeStepByStep(Scene):
             self.wait(1)
         self.wait(10)
 
-    def add_var_update(self, animations, mobject, local_vars, var_name, coord):
+    def add_var_update(self, animations, mobject, local_vars, var_name, coord, use_coin=False):
         if var_name in local_vars:
             new_value = self.fix_var(local_vars[var_name])
             if mobject is not None:
                 animations.extend(mobject.set_value(new_value))
             else:
-                mobject = ProgVariable(var_name, new_value).scale(0.75)
+                if use_coin:
+                    def coin_constructor(x):
+                        if x == '\varnothing':
+                            return CyrTex(r"${" + str(x) + "}$")
+                        else:
+                            return Coin(x).scale(0.45)
+
+                    mobject = ProgVariable(var_name, new_value, constructor=coin_constructor).scale(0.75)
+                else:
+                    mobject = ProgVariable(var_name, new_value).scale(0.75)
                 self.move_by_label(mobject, coord)
                 animations.append(FadeIn(mobject))
         return mobject
@@ -361,8 +370,8 @@ class MinChangeStepByStep(Scene):
             return var
 
 
-class ProgVariable(VGroup):
-    def __init__(self, name, initial_value, *vmobjects, **kwargs):
+class ProgVariable(Group):
+    def __init__(self, name, initial_value, constructor=lambda x: CyrTex(r"${" + str(x) + "}$"), *vmobjects, **kwargs):
         super().__init__(*vmobjects, **kwargs)
         self.label = CyrTex(r"$\texttt{" + name + "} =$")
         self.value_mob = None
@@ -371,6 +380,7 @@ class ProgVariable(VGroup):
         self.add(self.label)
         self.center()
         self.scale_factor = 1
+        self.constructor = constructor
 
     def scale(self, scale_factor, **kwargs):
         self.scale_factor *= scale_factor
@@ -380,7 +390,7 @@ class ProgVariable(VGroup):
         old_value_mob = self.value_mob
         if old_value_mob is not None:
             if self.old_value != new_value:
-                self.value_mob = CyrTex(r"${" + str(new_value) + "}$")
+                self.value_mob = self.constructor(new_value)
                 self.value_mob.scale(self.scale_factor)
                 self.value_mob.next_to(self.label, buff=self.scale_factor*DEFAULT_MOBJECT_TO_MOBJECT_BUFFER)
                 self.remove(old_value_mob)
