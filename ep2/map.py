@@ -4,7 +4,7 @@ one_frame = 1/60
 
 breakpoint = [
     (0, 0),
-    (9, 23)
+    (13, 31)
 ]
 
 pts = []

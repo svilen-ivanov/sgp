@@ -4,15 +4,14 @@ IFS=$'\n\t'
 
 VIDEO=output/video
 AUDIO=output/audio
-NAME=DynamicProgramming
+NAME=MinChangeStepByStep
 
 ffmpeg -i $VIDEO/$NAME.mp4 \
        -i $AUDIO/$NAME.flac \
     -filter_complex \
   " [0] setpts='PTS-STARTPTS +
-  gte(T,23)*(3/TB)
-
-    ' [vout]
+  gte(T,13)*(18/TB)
+    ' [vout] ;
   " \
   -map '[vout]' -map '1' \
   -vsync cfr \
