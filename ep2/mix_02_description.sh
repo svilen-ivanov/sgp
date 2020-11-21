@@ -29,7 +29,6 @@ gte(T,4.016666666666667)*(6.383333333333333/TB)
   -vsync cfr \
   -threads 4 \
   -vcodec libx264 \
-  -preset ultrafast \
   -acodec copy \
   -y \
   Description.mkv

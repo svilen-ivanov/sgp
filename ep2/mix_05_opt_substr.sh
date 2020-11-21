@@ -19,7 +19,6 @@ gte(T,5)*(3/TB)
   -vsync cfr \
   -threads 4 \
   -vcodec libx264 \
-  -preset ultrafast \
   -acodec copy \
   -y \
   $NAME.mkv

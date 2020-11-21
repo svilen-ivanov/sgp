@@ -9,5 +9,7 @@ ffmpeg \
   -i $AUDIO/TitleScreen.flac \
    -map '0' -map '1' \
    -threads 4 \
-   -vcodec copy -acodec copy -shortest \
+   -vcodec copy -acodec copy \
+    -shortest \
+    -y \
    TitleScreen.mkv

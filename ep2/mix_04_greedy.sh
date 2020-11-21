@@ -27,7 +27,6 @@ ffmpeg -i $VIDEO/$NAME.mp4 \
   -vsync cfr \
   -threads 4 \
   -vcodec libx264 \
-  -preset ultrafast \
   -acodec copy \
   -y \
   $NAME.mkv
