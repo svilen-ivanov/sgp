@@ -104,7 +104,7 @@ class Algo(MovingCameraScene):
         self.wait()
 
         self.play(*self.focus_others(self.same_min[2], color="#45e81c"), run_time=0.5)
-        self.wait()
+        self.wait(5)
 
         self.play(*[FadeOut(mob) for mob in self.all_mobjects_in_scene()])
 
@@ -164,6 +164,7 @@ class Algo(MovingCameraScene):
         group.add(align_to_mobject, eq, question_mark)
         if first:
             group.center()
+            self.wait(5)
             self.play(VGroup(align_to_mobject, eq).to_edge, LEFT, FadeOut(question_mark))
         else:
             self.play(FadeIn(question_mark), run_time=0.5)
