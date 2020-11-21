@@ -23,7 +23,7 @@ gte(T,4)*(2.119999999999999/TB)+
 gte(T,4.016666666666667)*(6.383333333333333/TB)
 
     ' [v1] ;
-    [v1] select=between(t\,0\,25) [vout]
+    [v1] select=between(t\,0\,23) [vout]
   " \
   -map '[vout]' -map '1' \
   -vsync cfr \
