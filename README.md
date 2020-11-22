@@ -10,7 +10,8 @@
 
 | Епизод | Заглавие | Дата
 |--------|----------| ----
-| 1      | [Mergesort - Сортиране чрез сливане](https://www.youtube.com/watch?v=WY8ZN7ENAEI) | 2020-11-08 
+| 1      | [Mergesort / Сортиране чрез сливане](https://www.youtube.com/watch?v=WY8ZN7ENAEI) | 2020-11-08 
+| 2      | [Min Coin Change / Ресто с най-малък брой монети](https://www.youtube.com/watch?v=_guMZQQzkUE) | 2020-11-22 
 
 # Лиценз
 
