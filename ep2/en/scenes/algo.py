@@ -7,7 +7,7 @@ from ep2.scenes.utils import CyrTex
 
 class MinCount(CyrTex):
     def __init__(self, sum, **kwargs):
-        super().__init__(r'$min(\text{\foreignlanguage{english}{\textit{\textbf{' + str(sum) + r'} ¢}}})$',
+        super().__init__(r'$min(\text{\textit{\textbf{' + str(sum) + r'} ¢}})$',
                          **kwargs)
 
 

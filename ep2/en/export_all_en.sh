@@ -5,6 +5,8 @@ IFS=$'\n\t'
 export PYTHONPATH=../../
 
 QUALITY=-ql
+manim scenes/bf_title.py BruteForceTitle $QUALITY
+manim scenes/greedy_title.py GreedyTitle $QUALITY
 manim scenes/title_scene.py TitleScreen $QUALITY
 manim scenes/description.py Description $QUALITY
 manim scenes/brute_force.py BruteForce $QUALITY
